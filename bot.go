@@ -3,9 +3,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"os"
-
 	"github.com/gempir/go-twitch-irc/v2"
+	"os"
 )
 
 
@@ -16,15 +15,16 @@ type Configuration struct {
 
 func main() {
 
-
 	file, _ := os.Open("conf.json")
 	defer file.Close()
 	decoder := json.NewDecoder(file)
 	configuration := Configuration{}
 	err := decoder.Decode(&configuration)
+
 	if err != nil {
 		fmt.Println("error:", err)
 	}
+
 	channel := configuration.Channel
 	oauth := configuration.Oauth
 
@@ -38,10 +38,10 @@ func main() {
 	})
 
 	client.OnConnect(func() {
-		client.Say("leminn", "pepegabot initalized")
+		client.Say(channel, "bot joined")
 	})
 
-	client.Join(	"leminn")
+	client.Join(channel)
 
 	err = client.Connect()
 	if err != nil {
