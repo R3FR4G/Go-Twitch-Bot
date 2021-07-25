@@ -4,12 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gempir/go-twitch-irc/v2"
+	"math/rand"
 	"os"
+	"strconv"
 )
 
 
 type Configuration struct {
 	Channel   string
+	User string
 	Oauth  string
 }
 
@@ -26,14 +29,17 @@ func main() {
 	}
 
 	channel := configuration.Channel
+	user := configuration.User
 	oauth := configuration.Oauth
 
-	client := twitch.NewClient(channel, oauth)
+	client := twitch.NewClient(user, oauth)
 
 	client.OnPrivateMessage(func(message twitch.PrivateMessage) {
 		fmt.Println(message.Message)
 		if message.Message == "!tournament" {
 			client.Say(channel, "The Sonic Speedrunning Community are hosting a Sonic Any% Tournament for SRB2! Check out the details & sign up here: shorturl.at/sGIT8")
+		} else if message.Message == "!dice" {
+			client.Say(channel, "You rolled: " + strconv.Itoa(rand.Intn(6)))
 		}
 	})
 
