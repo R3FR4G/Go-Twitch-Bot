@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gempir/go-twitch-irc/v2"
-	"math/rand"
 	"os"
-	"strconv"
 )
 
 
@@ -18,8 +16,18 @@ type Configuration struct {
 
 func main() {
 
+
+	responseCommands := map[string]string{
+		"!tournament": "The Sonic Speedrunning Community are hosting a Sonic Any% Tournament for SRB2! Check out the details & sign up here: shorturl.at/sGIT8",
+	}
+
 	file, _ := os.Open("conf.json")
-	defer file.Close()
+	defer func(file *os.File) {
+		err := file.Close()
+		if err != nil {
+
+		}
+	}(file)
 	decoder := json.NewDecoder(file)
 	configuration := Configuration{}
 	err := decoder.Decode(&configuration)
@@ -35,12 +43,17 @@ func main() {
 	client := twitch.NewClient(user, oauth)
 
 	client.OnPrivateMessage(func(message twitch.PrivateMessage) {
-		fmt.Println(message.Message)
-		if message.Message == "!tournament" {
-			client.Say(channel, "The Sonic Speedrunning Community are hosting a Sonic Any% Tournament for SRB2! Check out the details & sign up here: shorturl.at/sGIT8")
-		} else if message.Message == "!dice" {
-			client.Say(channel, "You rolled: " + strconv.Itoa(rand.Intn(6)))
+
+		if message.Message[0] == '!'{
+			response := responseCommands[message.Message]
+			if response != "" {
+				client.Say(channel,response)
+			}  else {
+				client.Say(channel, "Command not found")
+			}
 		}
+
+
 	})
 
 	client.OnConnect(func() {
@@ -54,3 +67,4 @@ func main() {
 		panic(err)
 	}
 }
+
