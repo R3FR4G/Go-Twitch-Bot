@@ -14,11 +14,13 @@ type Configuration struct {
 	Oauth  string
 }
 
+var configuration = Configuration{}
+
 func main() {
 
 
-	responseCommands := map[string]string{
-		"!tournament": "The Sonic Speedrunning Community are hosting a Sonic Any% Tournament for SRB2! Check out the details & sign up here: shorturl.at/sGIT8",
+	responseCommands := map[string]func(*twitch.PrivateMessage, *twitch.Client){
+		"!tournament": Tournament,
 	}
 
 	file, _ := os.Open("conf.json")
@@ -29,7 +31,6 @@ func main() {
 		}
 	}(file)
 	decoder := json.NewDecoder(file)
-	configuration := Configuration{}
 	err := decoder.Decode(&configuration)
 
 	if err != nil {
@@ -46,8 +47,8 @@ func main() {
 
 		if message.Message[0] == '!'{
 			response := responseCommands[message.Message]
-			if response != "" {
-				client.Say(channel,response)
+			if response != nil {
+				response(&message, client)
 			}  else {
 				client.Say(channel, "Command not found")
 			}
