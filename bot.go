@@ -46,8 +46,8 @@ func main() {
 	client.OnPrivateMessage(func(message twitch.PrivateMessage) {
 
 		if message.Message[0] == '!'{
-			response := responseCommands[message.Message]
-			if response != nil {
+			response, found := responseCommands[message.Message]
+			if found {
 				response(&message, client)
 			}  else {
 				client.Say(channel, "Command not found")
