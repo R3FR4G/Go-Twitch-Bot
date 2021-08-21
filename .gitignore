@@ -17,3 +17,6 @@
 *.json
 .gcloudignore
 *.yaml
+
+.idea/
+*.sum
